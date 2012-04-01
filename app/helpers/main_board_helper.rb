@@ -1,0 +1,2 @@
+module MainBoardHelper
+end
