@@ -1,3 +1,11 @@
+MIN_BOARD_SIZE=3
+MAX_BOARD_SIZE=6
+DEFAULT_BOARD_SIZE=3
+
+MIN_ROW_LENGTH=3
+MAX_ROW_LENGTH=MAX_BOARD_SIZE
+DEFAULT_ROW_LENGTH=[3, MAX_ROW_LENGTH].min
+
 class ApplicationController < ActionController::Base
   protect_from_forgery
 end

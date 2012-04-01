@@ -1,0 +1,37 @@
+<h1>New game</h1>
+<form>
+<p>
+<table>
+<tr>
+  <td>Board size:</td>
+  <td><select name="board-size-input" style="width: 100%" >
+  <%for i in MIN_BOARD_SIZE..MAX_BOARD_SIZE%>
+    <%if i == DEFAULT_BOARD_SIZE%><option selected="yes"><%else%><option><%end%>
+      <%="#{i}x#{i}"%>
+    </option>
+  <%end%>
+  </select></td>
+</tr>
+<tr>
+  <td>Winning condition:</td>
+  <td><select name="row-length-input" style="width: 100%" >
+  <%for i in MIN_ROW_LENGTH..MAX_ROW_LENGTH%>
+    <%if i == DEFAULT_ROW_LENGTH%><option selected="yes"><%else%><option><%end%>
+      <%="#{i} in a row"%>
+    </option>
+  <%end%>
+  </select></td>
+</tr>
+<tr>
+  <td>First move:</td>
+  <td><select name="first-move-input" style="width: 100%">
+    <option>Player</option>
+    <option>Computer</option>
+  </select></td>
+</tr>
+</table>
+</p>
+<p style="padding-left:10px;">
+<button type="button">Start game</button> 
+</p>
+</form>

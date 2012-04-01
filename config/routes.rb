@@ -1,4 +1,6 @@
 TicTacToe::Application.routes.draw do
+  get "main_board/setup"
+
   get "main_board/hello"
 
   # The priority is based upon order of creation:
