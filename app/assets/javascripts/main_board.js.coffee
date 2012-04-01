@@ -2,7 +2,23 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
+get_board_size = () ->
+  (Number) ($('#board-size-input').val()[0])
+
+get_row_length = () ->
+  (Number) ($('#row-length-input').val()[0])
+
+verify_result = () ->
+  board_size = get_board_size()
+  row_length = get_row_length()
+  if row_length <= board_size
+    $('#setup button').text('Start game')
+    $('.error-text').hide()
+  else
+    $('#setup button').text('Start game')
+    $('.error-text').text('Number of rows must not exceed the board size')
+    $('.error-text').show()
+
 $(document).ready ->
-  $('#answer').text('Changed from CoffeeScript!')
-  window.setTimeout(( () -> $('#answer').text('Changed from CoffeeScript! And again, it goes!')), 800);
-  window.setTimeout(( () -> $('#answer').text('Changed from CoffeeScript!')), 2400);
+  verify_result
+  $('select').change(verify_result)
