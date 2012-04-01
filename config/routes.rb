@@ -3,6 +3,8 @@ TicTacToe::Application.routes.draw do
 
   get "main_board/hello"
 
+  post "main_board/start_game"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

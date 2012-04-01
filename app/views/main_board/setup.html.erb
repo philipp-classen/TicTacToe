@@ -1,5 +1,6 @@
-<div id="setup">
-<form id="setup-form">
+<% @page_title = "Checkout" %>
+<%= form_tag(:action => "start_game") do %>
+<div id="setup" style="padding-left:10px;">
 <h1>New game</h1>
 <p>
 <table>
@@ -33,8 +34,9 @@
 </table>
 </p>
 <p style="padding-left:10px;">
-<button type="button">Start game</button>
+<!-- <button type="button">Start game</button> -->
+<%= submit_tag(" Start game ") %>
 <div class="error-text" style="color:#FF0000"></div>
 </p>
-</form>
 </div>
+<% end %>
