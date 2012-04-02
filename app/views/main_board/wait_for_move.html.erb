@@ -1,7 +1,9 @@
 <% @page_title = "Game in progress..." %>
 <%= form_tag(:action => "move_made") do %>
 <div id="wait-for-move" style="padding-left:10px;">
-<h1>Waiting for move...</h1>
+
+<h1><%= h(title) %></h1>
+
  <table id="board" style="padding-left:40px;">
  <% for row in (0..board.board_size - 1) %>
    <tr>

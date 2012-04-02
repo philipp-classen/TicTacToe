@@ -12,7 +12,7 @@ class MainBoardController < ApplicationController
     begin
       board = Board.new(params[:board_size_input].to_i, params[:row_length_input].to_i)
       store_board_in_session_cookie(board)
-      render(:action => 'wait_for_move', :locals => { :board => board })
+      render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
     rescue InvalidBoardException => e
       debugger
       logger.error(e.message)
@@ -25,6 +25,9 @@ class MainBoardController < ApplicationController
   end
 
   def wait_for_move
+  end
+
+  def game_over
   end
 
   def move_made
@@ -43,7 +46,9 @@ class MainBoardController < ApplicationController
 
         board = Board.new(board_params[:board_size].to_i, board_params[:row_length].to_i, move_list)
         store_board_in_session_cookie(board)
-        render(:action => 'wait_for_move', :locals => { :board => board })
+
+        render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
+
       rescue InvalidBoardException => e
         logger.error("board_params=#{board_params.inspect}")
         logger.error(e.message)
@@ -58,6 +63,7 @@ class MainBoardController < ApplicationController
         logger.error(e.backtrace.join("\n"))
         render(:action => 'error', :locals => { :error_msg => "Unknown error" })
       end
+
     else
       logger.error("Failed to parse move: params=#{params.inspect}")
       render(:action => 'error', :locals => { :error_msg => "Could not parse move" })
@@ -77,6 +83,17 @@ class MainBoardController < ApplicationController
       return [row.to_i, column.to_i]
     else
       return nil # failed to parse move
+    end
+  end
+
+  def compute_title(board)
+    case board.winner?
+    when 'x'
+      'x won!'
+    when 'o'
+      'o won!'
+    else
+      board.is_game_over? ? "It's a draw." : "Waiting for move..."
     end
   end
 
