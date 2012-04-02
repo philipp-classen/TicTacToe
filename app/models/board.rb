@@ -130,7 +130,7 @@ class Board
         x_step, y_step = one_up_and_left
       end
 
-      for i in (0..@board_size-1)
+      for i in (0..@board_size-@row_length)
         delta = i == 0 ? [[0,0]] : delta_options
         for delta in delta_options
           x = start_point[0] + delta[0] * i
