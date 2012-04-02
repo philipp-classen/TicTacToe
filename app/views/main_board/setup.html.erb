@@ -6,23 +6,23 @@
 <table>
 <tr>
   <td>Board size:</td>
-  <td><select name="board-size-input" id="board-size-input" style="width: 100%">
-  <%for i in MIN_BOARD_SIZE..MAX_BOARD_SIZE%>
-    <%if i == DEFAULT_BOARD_SIZE%><option selected="yes"><%else%><option><%end%>
-      <%="#{i}x#{i}"%>
-    </option>
-  <%end%>
-  </select></td>
+  <td>
+  <%= options = (MIN_BOARD_SIZE..MAX_BOARD_SIZE).to_a.map do |i|
+	["#{i}x#{i}", i]
+      end
+      select_tag(:board_size_input, options_for_select(options, DEFAULT_BOARD_SIZE), { :style => 'width: 100%' })
+  %>
+  </td>
 </tr>
 <tr>
   <td>Winning condition:</td>
-  <td><select name="row-length-input" id="row-length-input" style="width: 100%">
-  <%for i in MIN_ROW_LENGTH..MAX_ROW_LENGTH%>
-    <%if i == DEFAULT_ROW_LENGTH%><option selected="yes"><%else%><option><%end%>
-      <%="#{i} in a row"%>
-    </option>
-  <%end%>
-  </select></td>
+  <td>
+  <%= options = (MIN_ROW_LENGTH..MAX_ROW_LENGTH).to_a.map do |i|
+	["#{i} in a row", i]
+      end
+      select_tag(:row_length_input, options_for_select(options, DEFAULT_ROW_LENGTH), { :style => 'width: 100%' })
+  %>
+  </td>
 </tr>
 <tr>
   <td>First move:</td>

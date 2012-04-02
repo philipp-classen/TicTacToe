@@ -3,10 +3,10 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 get_board_size = () ->
-  (Number) ($('#board-size-input').val()[0])
+  (Number) ($('#board_size_input').val())
 
 get_row_length = () ->
-  (Number) ($('#row-length-input').val()[0])
+  (Number) ($('#row_length_input').val())
 
 verify_result = () ->
   board_size = get_board_size()
