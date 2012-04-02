@@ -13,9 +13,11 @@ verify_result = () ->
   row_length = get_row_length()
   if row_length <= board_size
     $('.error-text').hide()
+    $('#start_game_button').show()
   else
-    $('.error-text').text('Number of rows must not exceed the board size')
+    $('.error-text').text('The number of rows must not exceed the board size')
     $('.error-text').show()
+    $('#start_game_button').hide()
 
 $(document).ready ->
   verify_result

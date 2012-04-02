@@ -1,4 +1,4 @@
-<% @page_title = "Game in progress..." %>
+<% @page_title = board.is_game_over? ? "Game over" : "Game in progress..." %>
 <%= form_tag(:action => "move_made") do %>
 <div id="wait-for-move" style="padding-left:10px;">
 
@@ -25,4 +25,26 @@
  <input type="hidden" id="move_number" name="move_number" value="<%=board.moves.size%>" />
 
 </div>
+<% end %>
+
+<% if board.is_game_over? %>
+  <p />
+  <table>
+  <tr>
+  <td>
+  <%= form_tag(:action => "next_game") do %>
+  <div id="restart_game" style="padding-left:20px;">
+    <%=submit_tag("Next game", :name => "next_game_button", :style => 'width:110px') %>
+  </div>
+  <% end %>
+  </td>
+  <td>
+  <%= form_tag(:action => "setup") do %>
+  <div id="change_settings" style="padding-left:5px;">
+    <%=submit_tag("Settings", :name => "change_settings_button", :style => 'width:110px') %>
+  </div>
+  <% end %>
+  </td>
+  </tr>
+  </table>
 <% end %>

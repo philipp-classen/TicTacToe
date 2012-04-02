@@ -9,20 +9,11 @@ class MainBoardController < ApplicationController
   end
 
   def start_game
-    begin
-      board = Board.new(params[:board_size_input].to_i, params[:row_length_input].to_i)
-      computer_side = params[:first_move_input] == 'x' ? 'x' : 'o'
-      board = make_computer_move(board) if computer_side == 'x'
+    board_size = params[:board_size_input].to_i
+    row_size   = params[:row_length_input].to_i
+    first_move = params[:first_move_input]
 
-      session[:computer] = computer_side
-      store_board_in_session_cookie(board)
-      render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
-    rescue InvalidBoardException => e
-      debugger
-      logger.error(e.message)
-      logger.error(e.backtrace.join("\n"))
-      render(:action => 'error', :locals => { :error_msg => "Invalid board" })
-    end
+    start_game_helper(board_size, row_size, first_move)
   end
 
   def error
@@ -74,7 +65,35 @@ class MainBoardController < ApplicationController
     end
   end
 
+  def next_game
+    board_size = session[:board][:board_size]
+    row_size   = session[:board][:row_length]
+    first_move = session[:computer] == 'x' ? 'o' : 'x'
+
+    start_game_helper(board_size, row_size, first_move)
+  end
+
+  def back_to_setup
+    render(:action => 'setup')
+  end
+
 :private
+
+  def start_game_helper(board_size, row_size, first_move)
+    begin
+      board = Board.new(board_size, row_size)
+      computer_side = first_move == 'x' ? 'x' : 'o'
+      board = make_computer_move(board) if computer_side == 'x'
+
+      session[:computer] = computer_side
+      store_board_in_session_cookie(board)
+      render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
+    rescue InvalidBoardException => e
+      logger.error(e.message)
+      logger.error(e.backtrace.join("\n"))
+      render(:action => 'error', :locals => { :error_msg => "Invalid board" })
+    end
+  end
 
   def store_board_in_session_cookie(board)
     session[:board] = { :board_size => board.board_size, :row_length => board.row_length, :moves => board.moves }
@@ -94,7 +113,7 @@ class MainBoardController < ApplicationController
     if board.winner?
       return session[:computer] == board.winner? ? 'Computer won!' : 'Player won!'
     else
-      return board.is_game_over? ? "It's a draw." : "Waiting for move..."
+      return board.is_game_over? ? "It's a draw." : "It's your turn..."
     end
   end
 
