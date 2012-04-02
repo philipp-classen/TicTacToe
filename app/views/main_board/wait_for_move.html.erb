@@ -9,11 +9,11 @@
    <% for column in (0..board.board_size - 1) %>
      <td>
      <% if board[row][column] == 'x' %>
-       <%=submit_tag("X", :disabled => true, :style => 'color:#FF0000')%>
+       <%=submit_tag("X", :disabled => true, :style => 'color:#FF0000; width:35px')%>
      <% elsif board[row][column] == 'o' %>
-       <%=submit_tag("O", :disabled => true, :style => 'color:#0000FF')%>
+       <%=submit_tag("O", :disabled => true, :style => 'color:#0000FF; width:35px')%>
      <% else %>     
-       <%=submit_tag(" ", :name => "move_#{row}_#{column}")%>
+       <%=submit_tag(h(" "), :name => "move_#{row}_#{column}", :style => 'width:35px')%>
      <% end %>
      </td>
    <% end %>
