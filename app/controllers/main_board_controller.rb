@@ -91,13 +91,10 @@ class MainBoardController < ApplicationController
   end
 
   def compute_title(board)
-    case board.winner?
-    when 'x'
-      'x won!'
-    when 'o'
-      'o won!'
+    if board.winner?
+      return session[:computer] == board.winner? ? 'Computer won!' : 'Player won!'
     else
-      board.is_game_over? ? "It's a draw." : "Waiting for move..."
+      return board.is_game_over? ? "It's a draw." : "Waiting for move..."
     end
   end
 
