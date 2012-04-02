@@ -33,8 +33,15 @@ class MainBoardController < ApplicationController
       logger.debug("Make move: #{move}")
       begin
         board_params = session[:board]
-        board = Board.new(board_params[:board_size].to_i, board_params[:row_length].to_i,
-                          board_params[:moves] + [move])
+        move_number = params[:move_number].to_i
+        if move_number > 0
+          move_list = board_params[:moves][0..move_number-1]
+        else
+          move_list = []
+        end
+        move_list << move
+
+        board = Board.new(board_params[:board_size].to_i, board_params[:row_length].to_i, move_list)
         store_board_in_session_cookie(board)
         render(:action => 'wait_for_move', :locals => { :board => board })
       rescue InvalidBoardException => e
