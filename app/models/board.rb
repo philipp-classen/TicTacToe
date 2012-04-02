@@ -108,45 +108,44 @@ class Board
       end
     end
 
-    # check for diagonal wins (start in the lower-left corner):
-    for i in (0..@board_size-1)
-      delta = i == 0 ? [[0,0]] : [[-i,0], [0,i]]
-      for d in delta
-        x, y = [@board_size-1, 0] # lower left
-        x += d[0]
-        y += d[1]
+    lower_left  = [@board_size-1, 0]
+    lower_right = [@board_size-1, @board_size-1]
 
-        counter = @squares[x][y] == side ? 1 : 0
-        while (0..@board_size-1) === (x - 1) && (0..@board_size-1) === (y + 1)
-          x -= 1
-          y += 1
-          if @squares[x][y] == side
-            counter += 1
-            return true if counter >= @row_length
-          else
-            counter = 0
-          end
-        end
+    one_up    = [-1, 0]
+    one_right = [ 0, 1]
+    one_left  = [ 0,-1]
+
+    one_up_and_left  = [-1, -1]
+    one_up_and_right = [-1,  1]
+
+    # check for diagonal wins
+    for type in [:diagonal, :anti_diagonal]
+      if type == :diagonal
+        start_point = lower_left
+        delta_options = [one_up, one_right]
+        x_step, y_step = one_up_and_right
+      else
+        start_point   = lower_right
+        delta_options = [one_up, one_left]
+        x_step, y_step = one_up_and_left
       end
-    end
 
-    # check for anti-diagonal wins (start in the lower-right corner):
-    for i in (0..@board_size-1)
-      delta = i == 0 ? [[0,0]] : [[-i,0], [0,-i]]
-      for d in delta
-        x, y = [@board_size-1, @board_size-1] # lower right
-        x += d[0]
-        y += d[1]
+      for i in (0..@board_size-1)
+        delta = i == 0 ? [[0,0]] : delta_options
+        for delta in delta_options
+          x = start_point[0] + delta[0] * i
+          y = start_point[1] + delta[1] * i
 
-        counter = @squares[x][y] == side ? 1 : 0
-        while (0..@board_size-1) === (x - 1) && (0..@board_size-1) === (y - 1)
-          x -= 1
-          y -= 1
-          if @squares[x][y] == side
-            counter += 1
-            return true if counter >= @row_length
-          else
-            counter = 0
+          counter = @squares[x][y] == side ? 1 : 0
+          while (0..@board_size-1) === (x + x_step) && (0..@board_size-1) === (y + y_step)
+            x += x_step
+            y += y_step
+            if @squares[x][y] == side
+              counter += 1
+              return true if counter >= @row_length
+            else
+              counter = 0
+            end
           end
         end
       end
