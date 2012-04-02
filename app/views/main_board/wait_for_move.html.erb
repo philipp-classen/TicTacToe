@@ -14,7 +14,7 @@
      <% elsif board[row][column] == 'o' %>
        <%=submit_tag("O", :disabled => true, :style => 'color:#0000FF; width:35px')%>
      <% else %>     
-       <%=submit_tag(h(" "), :name => "move_#{row}_#{column}", :style => 'width:35px')%>
+       <%=submit_tag(h(" "), :disabled => board.is_game_over?, :name => "move_#{row}_#{column}", :style => 'width:35px')%>
      <% end %>
      </td>
    <% end %>
