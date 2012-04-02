@@ -6,4 +6,14 @@ class MainBoardControllerTest < ActionController::TestCase
     assert_response :success
   end
 
+  test "should get error" do
+    get :error
+    assert_response :success
+  end
+
+  test "should get setup" do
+    get :setup
+    assert_response :success
+  end
+
 end

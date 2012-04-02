@@ -1,0 +1,25 @@
+<% @page_title = "Game in progress..." %>
+<%= form_tag(:action => "move_made") do %>
+<div id="wait-for-move" style="padding-left:10px;">
+<h1>Waiting for move...</h1>
+
+ <table id="board" style="padding-left:40px;">
+ <% for row in (0..board.board_size - 1) %>
+   <tr>
+   <% for column in (0..board.board_size - 1) %>
+     <td>
+     <% if board[row][column] == 'x' %>
+       <%=submit_tag("X", :disabled => true, :style => 'color:#FF0000')%>
+     <% elsif board[row][column] == 'o' %>
+       <%=submit_tag("O", :disabled => true, :style => 'color:#0000FF')%>
+     <% else %>     
+       <%=submit_tag(" ", :name => "move_#{row}_#{column}")%>
+     <% end %>
+     </td>
+   <% end %>
+   </tr>
+ <% end %>
+</table>
+
+</div>
+<% end %>
