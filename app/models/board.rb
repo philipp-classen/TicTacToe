@@ -46,6 +46,10 @@ class Board
     @moves << [row, column]
   end
 
+  def winner?
+    return nil
+  end
+
 :private
 
   def is_setup_valid?
