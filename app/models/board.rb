@@ -48,6 +48,18 @@ class Board
     @winner = compute_winner
   end
 
+  def generate_legal_moves?
+    return [] if is_game_over?
+
+    moves = []
+    for row in (0..@board_size-1)
+      for column in (0..@board_size-1)
+        moves << { :row => row, :column => column } if @squares[row][column] == ' '
+      end
+    end
+    return moves
+  end
+
   def winner?
     @winner
   end

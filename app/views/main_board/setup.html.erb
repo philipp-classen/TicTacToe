@@ -26,10 +26,9 @@
 </tr>
 <tr>
   <td>First move:</td>
-  <td><select name="first-move-input" style="width: 100%">
-    <option>Player</option>
-    <option>Computer</option>
-  </select></td>
+  <td>
+  <%= select_tag(:first_move_input, options_for_select([["Player", 'o'], ["Computer", 'x']]), { :style => 'width: 100%' }) %>
+  </td>
 </tr>
 </table>
 </p>

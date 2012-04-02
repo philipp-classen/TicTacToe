@@ -11,6 +11,10 @@ class MainBoardController < ApplicationController
   def start_game
     begin
       board = Board.new(params[:board_size_input].to_i, params[:row_length_input].to_i)
+      computer_side = params[:first_move_input] == 'x' ? 'x' : 'o'
+      board = make_computer_move(board) if computer_side == 'x'
+
+      session[:computer] = computer_side
       store_board_in_session_cookie(board)
       render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
     rescue InvalidBoardException => e
@@ -43,10 +47,10 @@ class MainBoardController < ApplicationController
           move_list = []
         end
         move_list << move
-
         board = Board.new(board_params[:board_size].to_i, board_params[:row_length].to_i, move_list)
-        store_board_in_session_cookie(board)
+        board = make_computer_move(board) unless board.is_game_over?
 
+        store_board_in_session_cookie(board)
         render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
 
       rescue InvalidBoardException => e
@@ -95,6 +99,12 @@ class MainBoardController < ApplicationController
     else
       board.is_game_over? ? "It's a draw." : "Waiting for move..."
     end
+  end
+
+  def make_computer_move(board)
+    move = board.generate_legal_moves?.shuffle[0]
+    board.make_move(move)
+    return board
   end
 
 end
