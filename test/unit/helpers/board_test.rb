@@ -133,10 +133,23 @@ class MainBoardHelperTest < ActionView::TestCase
 
   ##
   # x o x
+  # o x
+  # o x o
+  test "should not detect game-over on a 3x3 board (xox_ox?_oxo)" do
+    moves = [[1,1], [1,0], [0,2], [2,0], [0,0], [2,2], [2,1], [0,1]]
+    board = Board.new(DEFAULT_BOARD_SIZE, DEFAULT_ROW_LENGTH, moves)
+
+    assert_equal(moves, board.moves)
+    assert_nil(board.winner?)
+    assert(!board.is_game_over?)
+  end
+
+  ##
+  # x o x
   # o x x
   # o x o
   test "should detect a draw on a 3x3 board (xox_oxx_oxo)" do
-    moves = [[1,1], [1,0], [0,2], [2,0], [0,0], [2,2], [1,2], [0,1], [2,1]]
+    moves = [[1,1], [1,0], [0,2], [2,0], [0,0], [2,2], [2,1], [0,1], [1,2]]
     board = Board.new(DEFAULT_BOARD_SIZE, DEFAULT_ROW_LENGTH, moves)
 
     assert_equal(moves, board.moves)
@@ -149,7 +162,7 @@ class MainBoardHelperTest < ActionView::TestCase
   # o x
   # x   o
   test "should detect a diagonal win by 'x' on a 3x3 board (??x_ox?_x?o)" do
-    moves = [[2,0], [1,0], [2,0], [2,2], [1,1]]
+    moves = [[2,0], [1,0], [0,2], [2,2], [1,1]]
     board = Board.new(DEFAULT_BOARD_SIZE, DEFAULT_ROW_LENGTH, moves)
 
     assert_equal(moves, board.moves)
@@ -162,7 +175,7 @@ class MainBoardHelperTest < ActionView::TestCase
   # x o
   # o   x
   test "should detect a diagonal win by 'o' on a 3x3 board (x?o_xo?_o?x)" do
-    moves = [[0,0], [2,0], [1,0], [2,0], [2,2], [1,1]]
+    moves = [[0,0], [0,2], [1,0], [2,0], [2,2], [1,1]]
     board = Board.new(DEFAULT_BOARD_SIZE, DEFAULT_ROW_LENGTH, moves)
 
     assert_equal(moves, board.moves)
