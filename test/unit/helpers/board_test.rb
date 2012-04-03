@@ -209,4 +209,22 @@ class MainBoardHelperTest < ActionView::TestCase
     assert(board.is_game_over?)
   end
 
+  test "should detect decisive moves on a 3x3 board" do
+    board = Board.new(DEFAULT_BOARD_SIZE, DEFAULT_ROW_LENGTH)
+
+    no = lambda do |row, col| 
+      assert_nil(board.move_is_decisive?(:row => row, :column => col))
+      board.make_move(:row => row, :column => col)
+    end
+    no.call(0, 0)
+    no.call(1, 0)
+    no.call(0, 1)
+
+    assert_equal('x', board.move_is_decisive?(:row => 1, :column => 1))
+    board.make_move(:row => 1, :column => 1)
+
+    assert_nil(board.move_is_decisive?(:row => 1, :column => 2))
+    assert_equal('x', board.move_is_decisive?(:row => 0, :column => 2))
+  end
+
 end

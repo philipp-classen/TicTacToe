@@ -48,6 +48,20 @@ class Board
     @winner = compute_winner
   end
 
+
+  def undo_move
+    raise InvalidMoveException, "no move to undo" if @moves.empty?
+
+    row, column = @moves[-1]
+    @squares[row][column] = ' '
+    @moves = @moves[0..-2]
+    @winner = nil
+  end
+
+  def move_is_decisive?(params)
+    move_is_decisive_helper(params, true)
+  end
+
   def generate_legal_moves?
     return [] if is_game_over?
 
@@ -177,4 +191,21 @@ class Board
     return false
   end
 
+  def move_is_decisive_helper(params, recursive)
+    begin
+      make_move(params)
+      return @winner if @winner
+      if recursive
+        generate_legal_moves?.each do |m|
+          result = move_is_decisive_helper(m, false)
+          return result if result
+        end
+      end
+    ensure
+      undo_move
+    end
+    return nil
+  end
+
 end
+

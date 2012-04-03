@@ -34,7 +34,13 @@ class Position < ActiveRecord::Base
           raise 'Corrupted database entry found.'
         end
       else
-        unknown_moves << m
+        decisive = board.move_is_decisive?(m)
+        logger.debug("#{m} -> decisive=#{decisive}") if decisive
+        if board.next_to_move? == decisive
+          winning_moves << m
+        elsif decisive == nil
+          unknown_moves << m
+        end
       end
     end
 
