@@ -24,6 +24,8 @@ ActiveRecord::Schema.define(:version => 20120403021130) do
     t.datetime "updated_at", :null => false
   end
 
+  add_index "game_histories", ["board"], :name => "index_game_histories_on_board"
+
   create_table "positions", :force => true do |t|
     t.string   "board"
     t.integer  "board_size"
@@ -32,5 +34,7 @@ ActiveRecord::Schema.define(:version => 20120403021130) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  add_index "positions", ["board"], :name => "index_positions_on_board"
 
 end
