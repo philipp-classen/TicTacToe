@@ -1,23 +1,26 @@
 class GameHistory < ActiveRecord::Base
-  attr_accessible :board, :board_size, :draws, :losses, :row_length, :wins
+  attr_accessible :board, :board_size, :row_length, :wins, :draws, :losses, :computer_on_move
 
   def self.store_game(board, computer_side)
     tmp_board = Board.new(board.board_size, board.row_length)
 
     board.moves.each do |m|
       move = { :row => m[0], :column => m[1] }
+      computer_on_move = tmp_board.next_to_move? == computer_on_move
       tmp_board.make_move(move)
       packed_board = tmp_board.pack_board
       
-      stats = where(:board_size => tmp_board.board_size,
-                    :row_length => tmp_board.row_length,
-                    :board      => packed_board).first
-      stats ||= GameHistory.new(:board      => packed_board,
-                                :board_size => tmp_board.board_size,
-                                :row_length => tmp_board.row_length,
-                                :draws      => 0,
-                                :losses     => 0,
-                                :wins       => 0)
+      stats = where(:board_size       => tmp_board.board_size,
+                    :row_length       => tmp_board.row_length,
+                    :board            => packed_board,
+                    :computer_on_move => computer_on_move).first
+      stats ||= GameHistory.new(:board            => packed_board,
+                                :board_size       => tmp_board.board_size,
+                                :row_length       => tmp_board.row_length,
+                                :wins             => 0,
+                                :draws            => 0,
+                                :losses           => 0,
+                                :computer_on_move => computer_on_move)
 
       if board.is_game_over? && !board.winner?
         stats.draws += 1
@@ -43,10 +46,12 @@ class GameHistory < ActiveRecord::Base
     best_score = nil
     best_moves = []
 
+    computer_on_move = board.next_to_move? == computer_on_move
     moves.each do |m|
-      stats = where(:board_size => board.board_size,
-                    :row_length => board.row_length,
-                    :board      => packed_boards[m]).first
+      stats = where(:board_size       => board.board_size,
+                    :row_length       => board.row_length,
+                    :board            => packed_boards[m],
+                    :computer_on_move => computer_on_move).first
       if stats
         score = compute_score(stats.wins, stats.losses, stats.draws)
       else
