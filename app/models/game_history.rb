@@ -68,11 +68,17 @@ class GameHistory < ActiveRecord::Base
 
   def self.compute_score(wins, losses, draws)
     total = wins + losses + draws
-    if total == 0
-      return 0.2
-    else
-      return (3 * wins + draws) / (4 * total).to_f
+    return 0.1 if total == 0
+
+    if wins > losses
+      wins += Math::log(total)
+      total = wins + losses + draws
+    elsif wins < losses
+      losses += Math::log(total)
+      total = wins + losses + draws
     end
+
+    base_score = (5 * wins + 3 * draws) / (8 * total).to_f
   end
 
 end
