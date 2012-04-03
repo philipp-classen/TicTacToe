@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120403153135) do
+ActiveRecord::Schema.define(:version => 20120403155102) do
 
   create_table "game_histories", :force => true do |t|
     t.string   "board"
@@ -26,6 +26,15 @@ ActiveRecord::Schema.define(:version => 20120403153135) do
   end
 
   add_index "game_histories", ["board"], :name => "index_game_histories_on_board"
+
+  create_table "game_logs", :force => true do |t|
+    t.integer  "board_size"
+    t.integer  "row_length"
+    t.integer  "result"
+    t.boolean  "first_move"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "positions", :force => true do |t|
     t.string   "board"

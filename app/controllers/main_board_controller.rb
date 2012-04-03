@@ -47,6 +47,7 @@ class MainBoardController < ApplicationController
         if board.is_game_over?
           Position.store_game(board)
           GameHistory.store_game(board, session[:computer])
+          GameLog.store_game(board, session[:computer])
         end
 
       rescue InvalidBoardException => e
