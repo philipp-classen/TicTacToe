@@ -39,7 +39,6 @@ class Position < ActiveRecord::Base
     if unknown_moves.empty? && where(:board_size => board.board_size,
                                      :row_length => board.row_length,
                                      :board      => packed_board).first == nil
-      debugger
       if !winning_moves.empty?
         result = board.next_to_move? == 'x' ? RESULT_X_WINS : RESULT_O_WINS
       elsif !drawing_moves.empty?
@@ -55,7 +54,6 @@ class Position < ActiveRecord::Base
       pos.save
     end
 
-    debugger
     return winning_moves[rand(winning_moves.size)] if !winning_moves.empty?
     return unknown_moves[rand(unknown_moves.size)] if !unknown_moves.empty?
     return drawing_moves[rand(drawing_moves.size)] if !drawing_moves.empty?
