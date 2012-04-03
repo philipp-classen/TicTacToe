@@ -8,5 +8,7 @@ class CreatePositions < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    add_index(:positions, :board)
   end
 end

@@ -10,5 +10,7 @@ class CreateGameHistories < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    add_index(:game_histories, :board)
   end
 end
