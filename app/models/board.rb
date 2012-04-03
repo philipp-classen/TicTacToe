@@ -72,6 +72,17 @@ class Board
     (0..@board_size-1).map { |row| @squares[row].join(' ') }.join("\n")
   end
 
+  def pack_board
+    @squares.flatten.join
+  end
+
+  def make_move_on_packed_board(packed_board, move)
+    result = packed_board.dup
+    index  = move[:row] * @board_size + move[:column]
+    result[index] = next_to_move?
+    return result
+  end
+
 :private
 
   def is_setup_valid?

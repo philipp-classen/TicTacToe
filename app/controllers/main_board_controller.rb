@@ -44,6 +44,8 @@ class MainBoardController < ApplicationController
         store_board_in_session_cookie(board)
         render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
 
+        Position.store_game(board) if board.is_game_over?
+
       rescue InvalidBoardException => e
         logger.error("board_params=#{board_params.inspect}")
         logger.error(e.message)
@@ -118,7 +120,7 @@ class MainBoardController < ApplicationController
   end
 
   def make_computer_move(board)
-    move = board.generate_legal_moves?.shuffle[0]
+    move = Position.get_best_move(board)
     board.make_move(move)
     return board
   end
