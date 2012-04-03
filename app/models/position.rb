@@ -8,19 +8,21 @@ class Position < ActiveRecord::Base
   def self.get_best_move(board)
     packed_board = board.pack_board
 
-    moves = board.generate_legal_moves?.shuffle
-    known_positions = {}
+    moves = board.generate_legal_moves?
     winning_moves = []
     drawing_moves = []
     unknown_moves = []
 
+    moves_to_packed_board = {}
+
     moves.each do |m|
       new_packed_board = board.make_move_on_packed_board(packed_board, m)
+      moves_to_packed_board[m] = new_packed_board
+
       position = where(:board_size => board.board_size,
                        :row_length => board.row_length,
                        :board      => new_packed_board).first
       if position
-        known_positions[new_packed_board] = { :position => position, :move => m }
         case position.result
         when RESULT_DRAW
           drawing_moves << m
@@ -54,12 +56,16 @@ class Position < ActiveRecord::Base
       pos.save
     end
 
+    pick = lambda { |choices|
+      GameHistory.pick_most_promising_move(board, choices, moves_to_packed_board)
+    }
+
     return winning_moves[rand(winning_moves.size)] if !winning_moves.empty?
-    return unknown_moves[rand(unknown_moves.size)] if !unknown_moves.empty?
-    return drawing_moves[rand(drawing_moves.size)] if !drawing_moves.empty?
+    return pick.call(unknown_moves) if !unknown_moves.empty?
+    return pick.call(drawing_moves) if !drawing_moves.empty?
 
     if !moves.empty?
-      return moves[rand(moves.size)]
+      return pick.call(moves)
     else
       raise 'No legal move found.'
     end

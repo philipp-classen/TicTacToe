@@ -44,7 +44,10 @@ class MainBoardController < ApplicationController
         store_board_in_session_cookie(board)
         render(:action => 'wait_for_move', :locals => { :board => board, :title => compute_title(board) })
 
-        Position.store_game(board) if board.is_game_over?
+        if board.is_game_over?
+          Position.store_game(board)
+          GameHistory.store_game(board, session[:computer])
+        end
 
       rescue InvalidBoardException => e
         logger.error("board_params=#{board_params.inspect}")
