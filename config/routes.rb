@@ -1,4 +1,5 @@
 TicTacToe::Application.routes.draw do
+
   get "main_board/setup"
   post "main_board/setup"
 
@@ -12,6 +13,8 @@ TicTacToe::Application.routes.draw do
 
   get "main_board/back_to_setup"
   post "main_board/back_to_setup"
+
+  root :to => 'main_board#setup'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
