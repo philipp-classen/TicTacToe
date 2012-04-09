@@ -60,11 +60,12 @@ class Position < ActiveRecord::Base
         result = board.next_to_move? == 'x' ? RESULT_O_WINS : RESULT_X_WINS
       end
 
-      pos = Position.new(:board      => packed_board,
-                         :board_size => board.board_size,
-                         :row_length => board.row_length,
-                         :result     => result)
-      pos.save
+
+      logger.info("Learned new position:\n#{board}\nresult=#{result}")
+      Position.create(:board      => packed_board,
+                      :board_size => board.board_size,
+                      :row_length => board.row_length,
+                      :result     => result)
     end
 
     pick = lambda { |choices|
