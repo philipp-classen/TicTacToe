@@ -227,7 +227,6 @@ class MainBoardHelperTest < ActionView::TestCase
     assert_equal('x', board.move_is_decisive?(:row => 0, :column => 2))
   end
 
-  ##
   test "should detect decisive moves on a 5x5[row=4] board" do
     board = Board.new(5, 4)
 

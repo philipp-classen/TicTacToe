@@ -298,6 +298,17 @@ end # ENABLE_REGRESSION_TEST
 
     all_attacker_moves_loose = true
     generate_legal_moves?.each do |attackers_move|
+
+      # Once the attacker has proved that he has at least one move
+      # that does not loose immediately, we can skip all his
+      # non-connected moves because they are unlikely to create
+      # a double threat.
+      unless all_attacker_moves_loose
+        next if get_neighbor_squares(attackers_move).all? do |sq|
+          @squares[sq[:row]][sq[:column]] != attacker
+        end
+      end
+
       begin
         make_move(attackers_move)
         if winner?
@@ -308,9 +319,9 @@ end # ENABLE_REGRESSION_TEST
         defender_wins = generate_legal_moves?.any? { |m| is_win?(m, defender) }
         unless defender_wins
           all_attacker_moves_loose = false
-          get_neighbor_squares(attackers_move[:row], attackers_move[:column]).each do |m|
+          get_empty_neighbor_squares(attackers_move).each do |m|
             if is_win?(m, attacker)
-              double_thread_found = get_connected_squares(m[:row], m[:column]).any? do |m2|
+              double_thread_found = get_empty_connected_squares(m).any? do |m2|
                 is_win?(m2, attacker)
               end
               if double_thread_found
@@ -338,17 +349,33 @@ end # ENABLE_REGRESSION_TEST
   # | - N # |
   # | - N N |
   #  -------
-  def get_neighbor_squares(row, column)
+  def get_neighbor_squares(sq)
+    row, column = sq[:row], sq[:column]
     result = []
     for dx in [-1,0,1]
       for dy in [-1,0,1]
         x, y = row + dx, column + dy
         if (dx != 0 || dy != 0) && (0..@board_size-1) === x && (0..@board_size-1) === y
-          result << { :row => x, :column => y } if @squares[x][y] == ' '
+          result << { :row => x, :column => y }
         end
       end
     end
     return result
+  end
+
+  ##
+  # Returns the list of empty squares with a distance of one.
+  # ("King"-like moves from the current square)
+  #
+  #  -------
+  # | - N N |
+  # | - N # |
+  # | - N N |
+  #  -------
+  def get_empty_neighbor_squares(sq)
+    return get_neighbor_squares(sq).select do |m|
+      @squares[m[:row]][m[:column]] == ' '
+    end
   end
 
   ##
@@ -359,7 +386,8 @@ end # ENABLE_REGRESSION_TEST
   # | N N # |
   # | - N N |
   #  -------
-  def get_connected_squares(row, column)
+  def get_empty_connected_squares(sq)
+    row, column = sq[:row], sq[:column]
     result = []
     for dx in [-1,0,1]
       for dy in [-1,0,1]

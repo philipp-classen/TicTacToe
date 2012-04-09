@@ -35,7 +35,10 @@ class Position < ActiveRecord::Base
           raise 'Corrupted database entry found.'
         end
       else
+        d = Time.new
+        logger.debug("Calling board.move_is_decisive?(m)...")
         winner = board.move_is_decisive?(m)
+        logger.debug("Calling board.move_is_decisive?(m)...done #{Time.new - d} sec")
         if winner
           if board.next_to_move? == winner
             logger.debug("Winning move found: #{m}")
