@@ -9,6 +9,8 @@ end
 
 class Board
 
+  ENABLE_REGRESSION_TEST = false
+
   attr_reader :board_size, :row_length
   
   def initialize(board_size, row_length, moves = [])
@@ -125,6 +127,60 @@ class Board
   end
 
   def compute_winner
+
+    winner = fast_compute_winner
+
+    if ENABLE_REGRESSION_TEST
+      r_winner = regression_compute_winner
+      if winner != r_winner
+        raise RuntimeError, "winner=#{winner.inspect}, but should be '#{r_winner.inspect}"
+      end
+    end
+
+    return winner
+  end
+
+  def fast_compute_winner
+    return nil if @moves.size < @row_length
+
+    last_move = @moves[-1]
+    side = @squares[last_move[0]][last_move[1]]
+    raise RuntimeError if side != 'x' && side != 'o'
+    
+    vertical      = [1, 0]
+    horizontal    = [0, 1]
+    diagonal      = [1,-1]
+    anti_diagonal = [1, 1]
+
+    [vertical, horizontal, diagonal, anti_diagonal].each do |dx, dy|
+      counter = 1
+      x, y = last_move
+      plus_dir_ok, neg_dir_ok = true, true
+      (1..@row_length - 1).each do |i|
+        if plus_dir_ok
+          plus_sq_x, plus_sq_y = [x + dx * i, y + dy * i]
+          plus_dir_ok = (0..@board_size-1) === plus_sq_x &&
+            (0..@board_size-1) === plus_sq_y &&
+            @squares[plus_sq_x][plus_sq_y] == side
+          counter += 1 if plus_dir_ok
+        end
+        if neg_dir_ok
+          neg_sq_x, neg_sq_y = [x - dx * i, y - dy * i]
+          neg_dir_ok = (0..@board_size-1) === neg_sq_x &&
+            (0..@board_size-1) === neg_sq_y &&
+            @squares[neg_sq_x][neg_sq_y] == side
+          counter += 1 if neg_dir_ok
+        end
+        break unless plus_dir_ok || neg_dir_ok
+      end
+      return side if counter >= @row_length
+    end
+
+    return nil
+  end
+
+if ENABLE_REGRESSION_TEST
+  def regression_compute_winner
     return nil if @moves.size < @row_length
 
     return 'x' if find_win_for('x')
@@ -204,6 +260,8 @@ class Board
 
     return false
   end
+
+end # ENABLE_REGRESSION_TEST
 
   ##
   # The last move is always winning if the other side -- the defender --
