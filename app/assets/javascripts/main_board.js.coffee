@@ -19,6 +19,25 @@ verify_result = () ->
     $('.error-text').show()
     $('#start_game_button').hide()
 
+# for setup screen...
 $(document).ready ->
   verify_result
   $('select').change(verify_result)
+
+
+move_made = (elem) ->
+  elem[0].value = $('#hidden-next-to-move')[0].value.toUpperCase()
+  elem.removeClass('empty_square')
+  $('.empty_square:enabled').attr('disabled', 'true')
+  $('#main_title').text('Waiting for computer move')
+  setInterval((()->
+    title = $('#main_title').text()
+    if title == 'Waiting for computer move...'
+      $('#main_title').text('Waiting for computer move')
+    else
+      $('#main_title').text(title + '.')
+  ), 700);
+
+# for wait_for_move...
+$(document).ready ->
+  $('.empty_square:enabled').click(() -> move_made($(this)))

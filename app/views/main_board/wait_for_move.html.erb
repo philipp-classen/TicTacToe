@@ -2,7 +2,9 @@
 <%= form_tag(:action => "move_made") do %>
 <div id="wait-for-move" style="padding-left:10px;">
 
-<h1><%= h(title) %></h1>
+<h1 id=main_title><%= h(title) %></h1>
+
+ <input type="hidden" id="hidden-next-to-move" value="<%=board.next_to_move?%>" />
 
  <table id="board" style="padding-left:40px;">
  <% for row in (0..board.board_size - 1) %>
@@ -14,7 +16,7 @@
      <% elsif board[row][column] == 'o' %>
        <%=submit_tag("O", :disabled => true, :style => 'color:#0000FF; width:35px')%>
      <% else %>     
-       <%=submit_tag(h(" "), :disabled => board.is_game_over?, :name => "move_#{row}_#{column}", :style => 'width:35px')%>
+       <%=submit_tag(h(" "), :class => "empty_square", :disabled => board.is_game_over?, :name => "move_#{row}_#{column}", :style => 'width:35px')%>
      <% end %>
      </td>
    <% end %>
