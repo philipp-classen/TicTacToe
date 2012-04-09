@@ -256,12 +256,19 @@ class Board
       raise InvalidMoveException, 'Square #{move} is already occupied'
     end
 
-    begin
-      @squares[move[:row]][move[:column]] = side
-      return find_win_for(side)
-    ensure
-      @squares[move[:row]][move[:column]] = ' '
+    for dx in [-1,0,1]
+      for dy in [-1,0,1]
+        if dx != 0 || dy != 0
+          win = (1..@row_length-1).all? do |i|
+            x = i * dx + move[:row]
+            y = i * dy + move[:column]
+            (0..@board_size-1) === x && (0..@board_size-1) === y && @squares[x][y] == side
+          end
+          return true if win
+        end
+      end
     end
+    return false
   end
 
   ##
