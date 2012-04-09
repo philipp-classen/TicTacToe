@@ -264,6 +264,31 @@ class MainBoardHelperTest < ActionView::TestCase
     assert_nil(board.move_is_decisive?(:row => 0, :column => 0))
   end
 
+  #
+  # xx x
+  # oo o
+  #
+  test "should detect winning move xx?x" do
+    board = Board.new(4, 4)
+
+    make_non_decisive_move(board, 0, 0)
+    make_non_decisive_move(board, 1, 0)
+    make_non_decisive_move(board, 0, 1)
+    make_non_decisive_move(board, 1, 1)
+    make_non_decisive_move(board, 0, 3)
+    board.move_is_decisive?(:row => 1, :column => 3)
+    board.make_move(:row => 1, :column => 3)
+
+    winning_move_for_x = { :row => 0, :column => 2 }
+    assert(board.is_win?(winning_move_for_x, 'x'))
+    assert(!board.is_win?(winning_move_for_x, 'o'))
+
+    winning_move_for_o = { :row => 1, :column => 2 }
+    assert(board.is_win?(winning_move_for_o, 'o'))
+    assert(!board.is_win?(winning_move_for_o, 'x'))
+
+  end
+
 :private
 
   def make_non_decisive_move(board, row, col)

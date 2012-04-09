@@ -113,6 +113,26 @@ class Board
     return result
   end
 
+  def is_win?(move, side)
+    row, column = move[:row], move[:column]
+    if @squares[row][column] != ' '
+      raise InvalidMoveException, 'Square #{move} is already occupied'
+    end
+
+    # HACK
+    begin
+      @moves << :null_move
+      @moves << [row, column]
+      @squares[row][column] = side
+
+      return fast_compute_winner == side
+
+    ensure
+      @squares[row][column] = ' '
+      @moves = @moves[0..-3]
+    end
+  end
+
 :private
 
   def is_setup_valid?
@@ -285,13 +305,13 @@ end # ENABLE_REGRESSION_TEST
           return attacker
         end
 
-        defender_wins = generate_legal_moves?.any? { |m| is_win(m, defender) }
+        defender_wins = generate_legal_moves?.any? { |m| is_win?(m, defender) }
         unless defender_wins
           all_attacker_moves_loose = false
           get_neighbor_squares(attackers_move[:row], attackers_move[:column]).each do |m|
-            if is_win(m, attacker)
+            if is_win?(m, attacker)
               double_thread_found = get_connected_squares(m[:row], m[:column]).any? do |m2|
-                is_win(m2, attacker)
+                is_win?(m2, attacker)
               end
               if double_thread_found
                 return attacker
@@ -307,26 +327,6 @@ end # ENABLE_REGRESSION_TEST
     end
 
     return all_attacker_moves_loose ? defender : nil
-  end
-
-  def is_win(move, side)
-    if @squares[move[:row]][move[:column]] != ' '
-      raise InvalidMoveException, 'Square #{move} is already occupied'
-    end
-
-    for dx in [-1,0,1]
-      for dy in [-1,0,1]
-        if dx != 0 || dy != 0
-          win = (1..@row_length-1).all? do |i|
-            x = i * dx + move[:row]
-            y = i * dy + move[:column]
-            (0..@board_size-1) === x && (0..@board_size-1) === y && @squares[x][y] == side
-          end
-          return true if win
-        end
-      end
-    end
-    return false
   end
 
   ##
