@@ -1,12 +1,12 @@
-# used within the database
-RESULT_WIN  = 1
-RESULT_DRAW = 0
-RESULT_LOSS = -1
-
 require 'position'
 
 class GameLog < ActiveRecord::Base
   attr_accessible :board_size, :row_length, :first_move, :result
+
+  # used within the database
+  RESULT_WIN  = 1
+  RESULT_DRAW = 0
+  RESULT_LOSS = -1
 
   def self.store_game(board, computer_side)
     return unless board.is_game_over?

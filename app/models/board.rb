@@ -38,9 +38,9 @@ class Board
     @moves.size % 2 == 0 ? 'x' : 'o'
   end
 
-  def make_move(params)
-    row    = params[:row]
-    column = params[:column]
+  def make_move(move)
+    row    = move[:row]
+    column = move[:column]
     raise InvalidMoveException, "row=#{row}, column=#{column}" unless is_valid_move?(row, column)
 
     @squares[row][column] = next_to_move?
@@ -58,8 +58,22 @@ class Board
     @winner = nil
   end
 
-  def move_is_decisive?(params)
-    move_is_decisive_helper(params, true)
+  ##
+  # If the winner can be deduced by a static analysis,
+  # the function will 'x' or 'o'. Otherwise, nil is returned.
+  #
+  def move_is_decisive?(move)
+    begin
+      make_move(move)
+      if @winner
+        return @winner
+      else
+        return double_threat_analysis
+      end
+    ensure
+      undo_move
+    end
+    return nil
   end
 
   def generate_legal_moves?
@@ -191,20 +205,111 @@ class Board
     return false
   end
 
-  def move_is_decisive_helper(params, recursive)
+  ##
+  # The last move is always winning if the other side -- the defender --
+  # has no immediate winning move, but the attacker has two wins.
+  #
+  # Simplifications:
+  # - One of the winning moves must be connected to the last move
+  # - For the second move, only the connected moves are considered
+  #
+  def double_threat_analysis
+
+    attacker = next_to_move?
+    defender = attacker == 'x' ? 'o' : 'x'
+
+    all_attacker_moves_loose = true
+    generate_legal_moves?.each do |attackers_move|
+      begin
+        make_move(attackers_move)
+        if winner?
+          raise RuntimeError, "board=#{self.to_s}" unless @winner == attacker
+          return attacker
+        end
+
+        defender_wins = generate_legal_moves?.any? { |m| is_win(m, defender) }
+        unless defender_wins
+          all_attacker_moves_loose = false
+          get_neighbor_squares(attackers_move[:row], attackers_move[:column]).each do |m|
+            if is_win(m, attacker)
+              double_thread_found = get_connected_squares(m[:row], m[:column]).any? do |m2|
+                is_win(m2, attacker)
+              end
+              if double_thread_found
+                return attacker
+              else
+                break
+              end
+            end
+          end
+        end
+      ensure
+        undo_move
+      end
+    end
+
+    return all_attacker_moves_loose ? defender : nil
+  end
+
+  def is_win(move, side)
+    if @squares[move[:row]][move[:column]] != ' '
+      raise InvalidMoveException, 'Square #{move} is already occupied'
+    end
+
     begin
-      make_move(params)
-      return @winner if @winner
-      if recursive
-        generate_legal_moves?.each do |m|
-          result = move_is_decisive_helper(m, false)
-          return result if result
+      @squares[move[:row]][move[:column]] = side
+      return find_win_for(side)
+    ensure
+      @squares[move[:row]][move[:column]] = ' '
+    end
+  end
+
+  ##
+  # Returns the list of squares with a distance of one.
+  # ("King"-like moves from the current square)
+  #
+  #  -------
+  # | - N N |
+  # | - N # |
+  # | - N N |
+  #  -------
+  def get_neighbor_squares(row, column)
+    result = []
+    for dx in [-1,0,1]
+      for dy in [-1,0,1]
+        x, y = row + dx, column + dy
+        if (dx != 0 || dy != 0) && (0..@board_size-1) === x && (0..@board_size-1) === y
+          result << { :row => x, :column => y } if @squares[x][y] == ' '
         end
       end
-    ensure
-      undo_move
     end
-    return nil
+    return result
+  end
+
+  ##
+  # Queen-like moves from the current square.
+  #
+  #  -------
+  # | - N N |
+  # | N N # |
+  # | - N N |
+  #  -------
+  def get_connected_squares(row, column)
+    result = []
+    for dx in [-1,0,1]
+      for dy in [-1,0,1]
+        if dx != 0 || dy != 0
+          sq_x = row + dx
+          sq_y = column + dy
+          while (0..@board_size-1) === sq_x && (0..@board_size-1) === sq_y
+            result << { :row => sq_x, :column => sq_y } if @squares[sq_x][sq_y] == ' '
+            sq_x += dx
+            sq_y += dy
+          end
+        end
+      end
+    end
+    return result
   end
 
 end

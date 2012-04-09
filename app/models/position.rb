@@ -1,9 +1,10 @@
-RESULT_DRAW   = 0
-RESULT_X_WINS = 1
-RESULT_O_WINS = 2
-
 class Position < ActiveRecord::Base
+
   attr_accessible :board, :board_size, :result, :row_length
+
+  RESULT_DRAW   = 0
+  RESULT_X_WINS = 1
+  RESULT_O_WINS = 2
 
   def self.get_best_move(board)
     packed_board = board.pack_board
@@ -34,11 +35,15 @@ class Position < ActiveRecord::Base
           raise 'Corrupted database entry found.'
         end
       else
-        decisive = board.move_is_decisive?(m)
-        logger.debug("#{m} -> decisive=#{decisive}") if decisive
-        if board.next_to_move? == decisive
-          winning_moves << m
-        elsif decisive == nil
+        winner = board.move_is_decisive?(m)
+        if winner
+          if board.next_to_move? == winner
+            logger.debug("Winning move found: #{m}")
+            winning_moves << m
+          else
+            logger.debug("Skipping loosing move: #{m}")
+          end
+        else
           unknown_moves << m
         end
       end
