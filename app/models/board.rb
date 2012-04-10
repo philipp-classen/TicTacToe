@@ -99,6 +99,37 @@ class Board
     @winner
   end
 
+  #
+  # If there is a winning line, it will return the list of squares (as [x,y])
+  #
+  def winning_line?
+    return nil if @winner == nil
+
+    winning_line = find_win_for(@winner)
+    start_x, start_y = winning_line[:square]
+    delta_x = winning_line[:d_row]
+    delta_y = winning_line[:d_col]
+
+    result = [[start_x, start_y]]
+
+    for direction in [-1, 1]
+      dx = direction * delta_x
+      dy = direction * delta_y
+      x, y = start_x + dx, start_y + dy
+      while (0..@board_size-1) === x && (0..@board_size-1) === y &&
+          @squares[x][y] == @winner
+        result << [x, y]
+        x, y = x + dx, y + dy
+      end
+    end
+
+    if result.size >= @row_length
+      return result.sort
+    else
+      raise RuntimeError, "#{self}\nresult=#{result.inspect}, winning_line=#{winning_line}"
+    end
+  end
+
   def is_game_over?
     @winner || @moves.size == @board_size * @board_size
   end
@@ -212,6 +243,7 @@ if ENABLE_REGRESSION_TEST
     return 'o' if find_win_for('o')
     return nil
   end
+end
 
   def find_win_for(side)
     # check for horizontal wins:
@@ -220,7 +252,9 @@ if ENABLE_REGRESSION_TEST
       for col in (0..@board_size-1)
         if @squares[row][col] == side
           counter += 1
-          return true if counter >= @row_length
+          if counter >= @row_length
+            return { :square => [row, col], :d_row => 0, :d_col => 1 }
+          end
         else
           counter = 0
         end
@@ -233,7 +267,9 @@ if ENABLE_REGRESSION_TEST
       for row in (0..@board_size-1)
         if @squares[row][col] == side
           counter += 1
-          return true if counter >= @row_length
+          if counter >= @row_length
+            return { :square => [row, col], :d_row => 1, :d_col => 0 }
+          end
         else
           counter = 0
         end
@@ -274,7 +310,9 @@ if ENABLE_REGRESSION_TEST
             y += y_step
             if @squares[x][y] == side
               counter += 1
-              return true if counter >= @row_length
+              if counter >= @row_length
+                return { :square => [x, y], :d_row => x_step, :d_col => y_step }
+              end
             else
               counter = 0
             end
@@ -283,10 +321,8 @@ if ENABLE_REGRESSION_TEST
       end
     end
 
-    return false
+    return nil
   end
-
-end # ENABLE_REGRESSION_TEST
 
   ##
   # The last move is always winning if the other side -- the defender --

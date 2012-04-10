@@ -263,7 +263,7 @@ class MainBoardHelperTest < ActionView::TestCase
     assert_nil(board.move_is_decisive?(:row => 0, :column => 0))
   end
 
-  #
+  ##
   # xx x
   # oo o
   #
@@ -286,6 +286,58 @@ class MainBoardHelperTest < ActionView::TestCase
     assert(board.is_win?(winning_move_for_o, 'o'))
     assert(!board.is_win?(winning_move_for_o, 'x'))
 
+  end
+
+  ##
+  # x x x
+  # o
+  # o
+  #
+  test "should find the horizontal winning row for a 3x3 board" do
+    moves = [[0,0], [1,0], [0,1], [2,0], [0,2]]
+    board = Board.new(3, 3, moves)
+
+    assert_equal('x', board.winner?)
+    assert_equal([[0,0], [0,1], [0,2]].sort, board.winning_line?.sort)
+  end
+
+  ##
+  # x o x
+  # x o
+  #   o
+  #
+  test "should find the vertical winning row for a 3x3 board" do
+    moves = [[0,0], [0,1], [0,2], [1,1], [1,0], [2,1]]
+    board = Board.new(3, 3, moves)
+
+    assert_equal('o', board.winner?)
+    assert_equal([[0,1], [1,1], [2,1]].sort, board.winning_line?.sort)
+  end
+
+  ##
+  # o o x
+  #   x
+  # x
+  #
+  test "should find the diagonal winning row for a 3x3 board" do
+    moves = [[1,1], [0,0], [2,0], [0,1], [0, 2]]
+    board = Board.new(3, 3, moves)
+
+    assert_equal('x', board.winner?)
+    assert_equal([[2,0], [1,1], [0,2]].sort, board.winning_line?.sort)
+  end
+
+  ##
+  # o
+  # x o
+  # x x o
+  #
+  test "should find the anti-diagonal winning row for a 3x3 board" do
+    moves = [[1,0], [0,0], [2,0], [1,1], [2,1], [2,2]]
+    board = Board.new(3, 3, moves)
+
+    assert_equal('o', board.winner?)
+    assert_equal([[0,0], [1,1], [2,2]].sort, board.winning_line?.sort)
   end
 
 :private

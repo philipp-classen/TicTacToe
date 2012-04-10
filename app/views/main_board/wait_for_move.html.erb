@@ -7,15 +7,18 @@
  <input type="hidden" id="hidden-next-to-move" value="<%=board.next_to_move?%>" />
 
  <table id="board" style="padding-left:40px;">
- <% for row in (0..board.board_size - 1) %>
+ <% winning_line = board.winning_line? || []
+    for row in (0..board.board_size - 1) %>
    <tr>
    <% for column in (0..board.board_size - 1) %>
      <td>
-     <% if board.last_move? == [row, column] && !board.is_game_over?
+     <% if (board.is_game_over? && winning_line.member?([row, column])) ||
+           (!board.is_game_over? && board.last_move? == [row, column])
           css_class = 'squares_to_flash'
         else
 	  css_class = nil
         end
+
         if board[row][column] == 'x' %>
        <%=submit_tag("X", :disabled => true, :class => css_class, :style => 'color:#FF0000; width:35px')%>
      <% elsif board[row][column] == 'o' %>
