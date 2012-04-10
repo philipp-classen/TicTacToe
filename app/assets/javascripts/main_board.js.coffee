@@ -30,14 +30,15 @@ move_made = (elem) ->
   elem.removeClass('empty_square')
   $('.empty_square:enabled').attr('disabled', 'true')
   $('#main_title').text('Waiting for computer move')
-  setInterval((()->
+  setInterval((() ->
     title = $('#main_title').text()
     if title == 'Waiting for computer move...'
       $('#main_title').text('Waiting for computer move')
     else
       $('#main_title').text(title + '.')
-  ), 700);
+  ), 700)
 
 # for wait_for_move...
 $(document).ready ->
   $('.empty_square:enabled').click(() -> move_made($(this)))
+  $('.squares_to_flash').effect("highlight", {}, 3000)

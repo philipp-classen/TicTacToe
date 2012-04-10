@@ -11,10 +11,15 @@
    <tr>
    <% for column in (0..board.board_size - 1) %>
      <td>
-     <% if board[row][column] == 'x' %>
-       <%=submit_tag("X", :disabled => true, :style => 'color:#FF0000; width:35px')%>
+     <% if board.last_move? == [row, column] && !board.is_game_over?
+          css_class = 'squares_to_flash'
+        else
+	  css_class = nil
+        end
+        if board[row][column] == 'x' %>
+       <%=submit_tag("X", :disabled => true, :class => css_class, :style => 'color:#FF0000; width:35px')%>
      <% elsif board[row][column] == 'o' %>
-       <%=submit_tag("O", :disabled => true, :style => 'color:#0000FF; width:35px')%>
+       <%=submit_tag("O", :disabled => true, :class => css_class, :style => 'color:#0000FF; width:35px')%>
      <% else %>     
        <%=submit_tag(h(" "), :class => "empty_square", :disabled => board.is_game_over?, :name => "move_#{row}_#{column}", :style => 'width:35px')%>
      <% end %>

@@ -36,6 +36,11 @@ class Board
     @moves.dup
   end
 
+  # may be null if no move has been yet made
+  def last_move?
+    @moves[-1]
+  end
+
   def next_to_move?
     @moves.size % 2 == 0 ? 'x' : 'o'
   end
