@@ -340,6 +340,17 @@ class MainBoardHelperTest < ActionView::TestCase
     assert_equal([[0,0], [1,1], [2,2]].sort, board.winning_line?.sort)
   end
 
+  ##
+  # x o x
+  # o o x
+  # x ? o
+  test "should not detect an decisive move if the position is immediately drawn 3x3" do
+    moves = [[0,0], [0,1], [0,2], [1,0], [1,2], [1,1], [2,0], [2,2]]
+    board = Board.new(3, 3, moves)
+
+    assert_nil(board.move_is_decisive?(:row => 2, :column => 1))
+  end
+
 :private
 
   def make_non_decisive_move(board, row, col)

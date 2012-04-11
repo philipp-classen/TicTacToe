@@ -72,7 +72,7 @@ class Board
   def move_is_decisive?(move)
     begin
       make_move(move)
-      if @winner
+      if is_game_over?
         return @winner
       else
         return double_threat_analysis
