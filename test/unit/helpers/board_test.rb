@@ -351,6 +351,24 @@ class MainBoardHelperTest < ActionView::TestCase
     assert_nil(board.move_is_decisive?(:row => 2, :column => 1))
   end
 
+  ##
+  # _ x x x ? x _
+  #   o o o
+  #
+  test "should find the only defence against a hidden double-threat on a 7x7[5] board" do
+    moves = [[0,1], [1,1], [0,2], [1,2], [0,3], [1,3], [0,5]]
+    board = Board.new(6, 5, moves)
+
+    defensive_move = { :row => 0, :column => 4 }
+    assert_nil(board.move_is_decisive?(defensive_move))
+
+    board.generate_legal_moves? do |m|
+      unless m == defensive_move
+	assert_equal('x', board.move_is_decisive?(m))
+      end
+    end
+  end
+
 :private
 
   def make_non_decisive_move(board, row, col)

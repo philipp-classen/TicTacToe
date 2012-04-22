@@ -360,7 +360,7 @@ end
         defender_wins = generate_legal_moves?.any? { |m| is_win?(m, defender) }
         unless defender_wins
           all_attacker_moves_loose = false
-          get_empty_neighbor_squares(attackers_move).each do |m|
+          get_empty_connected_squares(attackers_move).each do |m|
             if is_win?(m, attacker)
               double_thread_found = get_empty_connected_squares(m).any? do |m2|
                 is_win?(m2, attacker)
@@ -368,7 +368,7 @@ end
               if double_thread_found
                 return attacker
               else
-                break
+                next
               end
             end
           end
