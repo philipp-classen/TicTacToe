@@ -1,3 +1,6 @@
 == TicTacToe
 
 Small test application to experiment with Ruby on Rails.
+
+- Features a human-like AI, which detecs simple pattern and improves over time
+- Supports different board size beyond the classical 3x3 boards
